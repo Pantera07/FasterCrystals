@@ -19,18 +19,16 @@ package xyz.reknown.fastercrystals.commands.impl;
 
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.BooleanArgument;
+import dev.jorel.commandapi.arguments.PlayerArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import org.bukkit.NamespacedKey;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.reknown.fastercrystals.FasterCrystals;
 import xyz.reknown.fastercrystals.commands.AbstractCommand;
+import xyz.reknown.fastercrystals.user.User;
 
 public class FastercrystalsCommand extends AbstractCommand {
     public FastercrystalsCommand() {
@@ -44,29 +42,33 @@ public class FastercrystalsCommand extends AbstractCommand {
                 .withSubcommand(new CommandAPICommand("reload")
                         .withPermission("fastercrystals.reload")
                         .executesPlayer(this::runReload))
-                .withOptionalArguments(new BooleanArgument("toggle"))
+                .withArguments(new PlayerArgument("player"), new BooleanArgument("toggle"))
                 .withPermission("fastercrystals.toggle")
-                .executesPlayer(this::run)
+                .executes(this::run)
                 .register();
     }
 
     @Override
-    public void run(Player player, CommandArguments args) {
+    public void run(CommandSender sender, CommandArguments args) {
         FasterCrystals plugin = JavaPlugin.getPlugin(FasterCrystals.class);
-        PersistentDataContainer pdc = player.getPersistentDataContainer();
-        NamespacedKey key = new NamespacedKey(plugin, "fastcrystals");
+        Player targetPlayer = (Player) args.get(0);
+        boolean toggle = (boolean) args.get(1);
 
-        boolean toggle = (boolean) args.getOptional(0)
-                    .orElseGet(() -> pdc.getOrDefault(key, PersistentDataType.BYTE, (byte) 1) == 0);
-        pdc.set(key, PersistentDataType.BYTE, (byte) (toggle ? 1 : 0x0));
+        if (targetPlayer == null) {
+            sender.sendMessage(Component.text("Player not found: " + targetPlayer.getName(), NamedTextColor.RED));
+            return;
+        }
 
-        String stateKey = "state." + (toggle ? "on" : "off");
-        String state = plugin.getConfig().getString(stateKey);
-        String text = plugin.getConfig().getString("text");
+        User user = plugin.getUsers().get(targetPlayer);
+        if (user == null) {
+            sender.sendMessage(Component.text("User not found: " + targetPlayer.getName(), NamedTextColor.RED));
+            return;
+        }
 
-        MiniMessage mm = MiniMessage.miniMessage();
-        Component component = mm.deserialize(text, Placeholder.parsed("state", state));
-        player.sendMessage(component);
+        boolean currentState = user.isFasterCrystals();
+        user.setFasterCrystals(toggle);
+
+        sender.sendMessage(Component.text("Set " + targetPlayer.getName() + "'s FastCrystals state from " + (currentState ? "ON" : "OFF") + " to " + (toggle ? "ON" : "OFF") + ".", NamedTextColor.GREEN));
     }
 
     public void runReload(Player player, CommandArguments args) {
