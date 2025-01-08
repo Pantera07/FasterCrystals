@@ -19,12 +19,7 @@ package xyz.reknown.fastercrystals.user;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
-import xyz.reknown.fastercrystals.FasterCrystals;
 import xyz.reknown.fastercrystals.enums.AnimPackets;
 
 @Getter
@@ -33,14 +28,17 @@ public class User {
     @Setter private AnimPackets lastPacket;
     @Setter private boolean ignoreAnim;
 
+    private boolean isEnable = false;
+
     public User(Player player) {
         this.player = player;
     }
 
     public boolean isFasterCrystals() {
-        FasterCrystals plugin = JavaPlugin.getPlugin(FasterCrystals.class);
-        PersistentDataContainer pdc = player.getPersistentDataContainer();
-        NamespacedKey key = new NamespacedKey(plugin, "fastcrystals");
-        return pdc.getOrDefault(key, PersistentDataType.BYTE, (byte) 1) == 1;
+        return isEnable;
+    }
+
+    public void setFasterCrystals(boolean value) {
+        isEnable = value;
     }
 }
