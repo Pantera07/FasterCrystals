@@ -19,7 +19,7 @@ package xyz.reknown.fastercrystals.commands;
 
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.CommandArguments;
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 
 public abstract class AbstractCommand {
     protected final String name;
@@ -30,5 +30,5 @@ public abstract class AbstractCommand {
 
     public abstract void register();
 
-    public abstract void run(Player player, CommandArguments args) throws WrapperCommandSyntaxException;
+    public abstract void run(CommandSender sender, CommandArguments args) throws WrapperCommandSyntaxException;
 }
