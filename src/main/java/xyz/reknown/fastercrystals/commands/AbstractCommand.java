@@ -15,30 +15,20 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>. 
  */
 
-package xyz.reknown.fastercrystals.user;
+package xyz.reknown.fastercrystals.commands;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.bukkit.entity.Player;
-import xyz.reknown.fastercrystals.enums.AnimPackets;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.CommandArguments;
+import org.bukkit.command.CommandSender;
 
-@Getter
-public class User {
-    private final Player player;
-    @Setter private AnimPackets lastPacket;
-    @Setter private boolean ignoreAnim;
+public abstract class AbstractCommand {
+    protected final String name;
 
-    private boolean isEnable = false;
-
-    public User(Player player) {
-        this.player = player;
+    public AbstractCommand(String name) {
+        this.name = name;
     }
 
-    public boolean isFasterCrystals() {
-        return isEnable;
-    }
+    public abstract void register();
 
-    public void setFasterCrystals(boolean value) {
-        isEnable = value;
-    }
+    public abstract void run(CommandSender sender, CommandArguments args) throws WrapperCommandSyntaxException;
 }
