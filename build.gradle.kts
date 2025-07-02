@@ -34,6 +34,7 @@ java {
 }
 
 repositories {
+    maven("https://repo.codemc.org/repository/maven-public/")
     maven("https://repo.codemc.io/repository/maven-snapshots/")
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
 }
@@ -43,6 +44,7 @@ dependencies {
 
     compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly("com.github.retrooper:packetevents-spigot:2.9.0-SNAPSHOT")
+    compileOnly("dev.jorel:commandapi-bukkit-core:10.1.1")
 
     compileOnly("org.projectlombok:lombok:1.18.38")
     annotationProcessor("org.projectlombok:lombok:1.18.38")
@@ -73,9 +75,6 @@ bukkitPluginYaml {
     authors.add("Jyguy")
     apiVersion = "1.20.5"
     foliaSupported = true
-    depend.addAll("packetevents")
+    depend.addAll("packetevents", "CommandAPI")
     softDepend.addAll("PlaceholderAPI")
-    commands.register("fastercrystals") {
-        usage = "/fastercrystals <on/off|toggle>"
-    }
 }
