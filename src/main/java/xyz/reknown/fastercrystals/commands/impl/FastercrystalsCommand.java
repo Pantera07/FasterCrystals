@@ -19,7 +19,7 @@ package xyz.reknown.fastercrystals.commands.impl;
 
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.BooleanArgument;
-import dev.jorel.commandapi.arguments.PlayerArgument;
+import dev.jorel.commandapi.arguments.EntitySelectorArgument.OnePlayer;
 import dev.jorel.commandapi.executors.CommandArguments;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -42,7 +42,7 @@ public class FastercrystalsCommand extends AbstractCommand {
                 .withSubcommand(new CommandAPICommand("reload")
                         .withPermission("fastercrystals.reload")
                         .executesPlayer(this::runReload))
-                .withArguments(new PlayerArgument("player"), new BooleanArgument("toggle"))
+                .withArguments(new OnePlayer("player"), new BooleanArgument("toggle"))
                 .withPermission("fastercrystals.toggle")
                 .executes(this::run)
                 .register();
