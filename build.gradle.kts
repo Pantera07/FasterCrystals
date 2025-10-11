@@ -44,7 +44,7 @@ dependencies {
 
     compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly("com.github.retrooper:packetevents-spigot:2.9.0-SNAPSHOT")
-    compileOnly("dev.jorel:commandapi-bukkit-core:10.1.1")
+    compileOnly("dev.jorel:commandapi-paper-core:11.0.0")
 
     compileOnly("org.projectlombok:lombok:1.18.38")
     annotationProcessor("org.projectlombok:lombok:1.18.38")
