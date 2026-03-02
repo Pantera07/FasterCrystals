@@ -42,6 +42,7 @@ public class AnimationListener extends SimplePacketListenerAbstract {
     @Override
     public void onPacketPlayReceive(PacketPlayReceiveEvent event) {
         if (event.getPacketType() != PacketType.Play.Client.ANIMATION) return;
+        if (event.isCancelled()) return;
 
         FasterCrystals plugin = JavaPlugin.getPlugin(FasterCrystals.class);
         Player player = event.getPlayer();
