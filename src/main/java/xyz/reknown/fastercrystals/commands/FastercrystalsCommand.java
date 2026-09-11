@@ -21,6 +21,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -32,6 +33,7 @@ import xyz.reknown.fastercrystals.FasterCrystals;
 import xyz.reknown.fastercrystals.api.FasterCrystalsAPI;
 import xyz.reknown.fastercrystals.util.ConfigCache;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -53,19 +55,37 @@ public class FastercrystalsCommand implements CommandExecutor, TabCompleter {
             return handleReload(sender);
         }
 
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("Only players can use this command!", NamedTextColor.RED));
-            return true;
-        }
-
         if (!sender.hasPermission("fastercrystals.toggle")) {
             sender.sendMessage(Component.text("You do not have permissions to do this!", NamedTextColor.RED));
             return true;
         }
 
+        Player target;
+        String toggleStr = null;
+
+        // /fastercrystals <Player> <on/off>
+        if (args.length >= 2) {
+            target = Bukkit.getPlayer(args[0]);
+            if (target == null) {
+                sender.sendMessage(Component.text("Player not found: " + args[0], NamedTextColor.RED));
+                return true;
+            }
+            toggleStr = args[1];
+        } else {
+            // /fastercrystals or /fastercrystals <on/off>
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage(Component.text("Only players can use this command for themselves!", NamedTextColor.RED));
+                return true;
+            }
+            target = player;
+            if (args.length == 1) {
+                toggleStr = args[0];
+            }
+        }
+
         boolean toggle;
-        if (args.length > 0) {
-            String toggleStr = args[0].toLowerCase();
+        if (toggleStr != null) {
+            toggleStr = toggleStr.toLowerCase();
             if (ON_STRINGS.contains(toggleStr)) {
                 toggle = true;
             } else if (OFF_STRINGS.contains(toggleStr)) {
@@ -75,11 +95,16 @@ public class FastercrystalsCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
         } else {
-            toggle = !api.isFastCrystalsEnabled(player);
+            toggle = !api.isFastCrystalsEnabled(target);
         }
 
-        api.setFastCrystals(player, toggle);
-        sendToggleMessage(player, toggle);
+        api.setFastCrystals(target, toggle);
+        //sendToggleMessage(target, toggle);
+
+        if (sender != target) {
+            sender.sendMessage(Component.text("Set " + target.getName() + "'s FastCrystals state to " + (toggle ? "ON" : "OFF") + ".", NamedTextColor.GREEN));
+        }
+
         return true;
     }
 
@@ -106,11 +131,20 @@ public class FastercrystalsCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (args.length != 1) return List.of();
+        if (args.length == 1) {
+            List<String> completions = new ArrayList<>(List.of("reload", "on", "off"));
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                completions.add(p.getName());
+            }
+            return completions.stream()
+                    .filter(s -> s.toLowerCase().startsWith(args[0].toLowerCase()))
+                    .toList();
+        } else if (args.length == 2) {
+            return List.of("on", "off").stream()
+                    .filter(s -> s.toLowerCase().startsWith(args[1].toLowerCase()))
+                    .toList();
+        }
 
-        String input = args[0].toLowerCase();
-        return List.of("reload", "on", "off").stream()
-                .filter(s -> s.startsWith(input))
-                .toList();
+        return List.of();
     }
 }
