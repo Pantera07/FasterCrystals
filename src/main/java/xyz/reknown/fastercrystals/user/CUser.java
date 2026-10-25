@@ -21,8 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import xyz.reknown.fastercrystals.FasterCrystals;
 import xyz.reknown.fastercrystals.enums.AnimPackets;
 
@@ -38,13 +36,17 @@ public class CUser {
     @Setter
     private boolean ignoreAnim;
 
+    private boolean isEnable = false;
+
     public CUser(Player player) {
         this.player = player;
     }
 
     public boolean isFasterCrystals() {
-        PersistentDataContainer pdc = player.getPersistentDataContainer();
-        byte defaultState = FasterCrystals.getInstance().getConfigCache().getDefaultStateByte();
-        return pdc.getOrDefault(FAST_CRYSTALS_KEY, PersistentDataType.BYTE, defaultState) == 1;
+        return isEnable;
+    }
+
+    public void setFasterCrystals(boolean value) {
+        isEnable = value;
     }
 }
