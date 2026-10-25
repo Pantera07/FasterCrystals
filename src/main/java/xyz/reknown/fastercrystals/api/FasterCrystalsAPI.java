@@ -20,8 +20,6 @@ package xyz.reknown.fastercrystals.api;
 import lombok.Getter;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import xyz.reknown.fastercrystals.FasterCrystals;
 import xyz.reknown.fastercrystals.user.CUser;
 
@@ -94,8 +92,8 @@ public class FasterCrystalsAPI {
      * @param enabled true to enable fast crystals, false to disable
      */
     public void setFastCrystals(Player player, boolean enabled) {
-        PersistentDataContainer pdc = player.getPersistentDataContainer();
-        pdc.set(fastCrystalsKey, PersistentDataType.BYTE, (byte) (enabled ? 1 : 0));
+        CUser cUser = plugin.getUserRepository().get(player);
+        if (cUser != null) cUser.setFasterCrystals(enabled);
     }
 
     /**
@@ -105,9 +103,8 @@ public class FasterCrystalsAPI {
      * @return true if enabled, false otherwise
      */
     public boolean isFastCrystalsEnabled(Player player) {
-        PersistentDataContainer pdc = player.getPersistentDataContainer();
-        byte defaultState = plugin.getConfigCache().getDefaultStateByte();
-        return pdc.getOrDefault(fastCrystalsKey, PersistentDataType.BYTE, defaultState) == 1;
+        CUser cUser = plugin.getUserRepository().get(player);
+        return cUser != null && cUser.isFasterCrystals();
     }
 
     /**
