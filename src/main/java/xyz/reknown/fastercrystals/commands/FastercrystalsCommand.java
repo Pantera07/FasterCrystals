@@ -146,4 +146,5 @@ public class FastercrystalsCommand implements CommandExecutor, TabCompleter {
         }
 
         return List.of();
+    }
 }
